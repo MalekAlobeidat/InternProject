@@ -14,6 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
+        $this->call([
+            PrivacysettingSeeder::class,
+            UserRoleSeeder::class,
+            // Add more seeders here if needed
+        ]);
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
