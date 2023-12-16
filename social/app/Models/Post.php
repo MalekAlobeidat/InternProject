@@ -9,6 +9,7 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'PostID';
 
     protected $fillable = [
         'UserID',

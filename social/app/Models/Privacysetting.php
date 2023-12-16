@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Privacysetting extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'PrivacyID';
+
     protected $fillable = [
         'PrivacyName',
     ];
