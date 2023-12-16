@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/friendRequest',[MalekController::class,'friendRequest']);
 Route::post('/respondToFriendRequest',[MalekController::class,'respondToFriendRequest']);
+Route::post('/updateUser/{id}',[MalekController::class,'updateUser']);
