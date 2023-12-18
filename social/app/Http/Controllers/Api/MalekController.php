@@ -149,8 +149,6 @@ class MalekController extends Controller
 
 
 
-
-
     public function updateUser(Request $request, $userId)
 {
     try {
@@ -247,7 +245,9 @@ public function test(Request $request)
             }else{
                 $friendRequest->update([
                     'Status' => 'accepted',
-                ]);
+                ]);=======
+                $friendRequest->save();
+                dd($friendRequest);
 
             }
         }
