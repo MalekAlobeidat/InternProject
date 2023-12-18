@@ -64,8 +64,3 @@
     "minimum-stability": "stable",
     "prefer-stable": true
 }
-{
-    "require": {
-        "laravel/sanctum": "^3.3"
-    }
-}

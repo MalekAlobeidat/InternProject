@@ -245,7 +245,7 @@ public function test(Request $request)
             }else{
                 $friendRequest->update([
                     'Status' => 'accepted',
-                ]);=======
+                ]);
                 $friendRequest->save();
                 dd($friendRequest);
 
