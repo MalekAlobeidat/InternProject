@@ -7,59 +7,44 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        // You may implement this based on your requirements
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'UserID' => 'nullable', // Adjust validation rules as needed
+            'PostID' => 'required',
+            'CommentText' => 'required|string',
+        ]);
+
+        $comment = Comment::create($validatedData);
+
+        return response()->json(['comment' => $comment], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Comment $comment)
     {
-        //
+        return response()->json(['comment' => $comment], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Comment $comment)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Comment $comment)
     {
-        //
+        $validatedData = $request->validate([
+            'CommentText' => 'required|string',
+        ]);
+
+        $comment->update($validatedData);
+
+        return response()->json(['comment' => $comment], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+
+        return response()->json(['message' => 'Comment deleted successfully'], 200);
     }
 }

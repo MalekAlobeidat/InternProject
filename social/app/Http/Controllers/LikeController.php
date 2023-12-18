@@ -7,59 +7,27 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function like(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'UserID' => 'required',
+            'PostID' => 'required',
+        ]);
+
+        $like = Like::create($validatedData);
+
+        return response()->json(['like' => $like], 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function unlike(Request $request)
     {
-        //
-    }
+        $validatedData = $request->validate([
+            'UserID' => 'required',
+            'PostID' => 'required',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        Like::where($validatedData)->delete();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Like $like)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Like $like)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Like $like)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Like $like)
-    {
-        //
+        return response()->json(['message' => 'Post unliked successfully'], 200);
     }
 }
