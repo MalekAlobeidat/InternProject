@@ -66,7 +66,23 @@ class MalekController extends Controller
         }
     }
 
-    public function respondToFriendRequest(Request $request)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function respond(Request $request)
     {
         try {
             // Validation and authorization logic can be added here
@@ -116,6 +132,25 @@ class MalekController extends Controller
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     public function updateUser(Request $request, $userId)
 {
     try {
@@ -134,7 +169,15 @@ class MalekController extends Controller
         $user->RoleID = $request->filled('RoleID') ? $request->input('RoleID') : $user->RoleID;
         $user->OtherProfileInfo = $request->filled('OtherProfileInfo') ? $request->input('OtherProfileInfo') : $user->OtherProfileInfo;
 
+        // Update profile picture only if the input exists and is a valid file
+        // if ($request->hasFile('ProfilePicture') && $request->file('ProfilePicture')->isValid()) {
+        //     // Delete the old profile picture
+        //     Storage::disk('public')->delete($user->ProfilePicture);
 
+        //     // Upload the new profile picture
+        //     $imagePath = $request->file('ProfilePicture')->store('profile_pictures', 'public');
+        //     $user->ProfilePicture = $imagePath;
+        // }
         if ($request->hasFile('ProfilePicture') && $request->file('ProfilePicture')->isValid()) {
             // Delete the old profile picture
             if ($user->ProfilePicture) {
@@ -156,6 +199,74 @@ class MalekController extends Controller
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public function test(Request $request)
+{
+    try {
+        // Validation and authorization logic can be added here
+        $request->validate([
+            'sender_user_id' => 'required|exists:users,id',
+            'receiver_user_id' => 'required|exists:users,id',
+            'response' => 'required|in:accept,reject',
+        ]);
+        $resoponse = $request->response;
+        // dd($request);
+        $friendRequest = FriendRequest::where([
+            'SenderUserID' => $request->input('sender_user_id'),
+            'ReceiverUserID' => $request->input('receiver_user_id'),
+            'Status' => 'pending',
+        ])->orWhere([
+            'SenderUserID' => $request->input('receiver_user_id'),
+            'ReceiverUserID' => $request->input('sender_user_id'),
+            'Status' => 'pending',
+        ])->first();
+        if ($friendRequest && $friendRequest->exists()) {
+            if ($resoponse == "reject") {
+
+                $friendRequest->delete();
+
+                return response()->json(['message' => 'Friend request rejected successfully']);
+            }else{
+                $friendRequest->update([
+                    'Status' => 'accepted',
+                ]);
+                $friendRequest->save();
+                dd($friendRequest);
+            }
+        }
+        return response()->json(['message' => 'Friend request responded successfully', 'data' => $friendRequest]);
+
+    } catch (ValidationException $e) {
+        // Handle validation errors
+        return response()->json(['error' => $e->getMessage()], 422);
+
+    } catch (ModelNotFoundException $e) {
+        // Handle model not found errors
+        return response()->json(['error' => 'Friend request not found or already responded'], 404);
+
+    } catch (\Exception $e) {
+        // Handle other exceptions
+        return response()->json(['error' => 'An error occurred while processing the request'], 500);
+    }
+}
 
 
 }
