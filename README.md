@@ -5,12 +5,18 @@ The backlog for this project was created on Trello:
 https://trello.com/invite/b/yK3z0vY6/ATTI1ea7ebdac9b7e187b962f44d144eb3de9C648857/social-media-platform
 
 And the LinkedIn for the members of the group
-Malek Alobeidat: https://www.linkedin.com/in/malek-alobeidat-717361251/
-Mohammed Kayed: https://www.linkedin.com/in/mohammad-kayed-b708bb290/
-Omama Akour: https://www.linkedin.com/in/omama-akour-426476267/
-Mohannad Ayman: https://www.linkedin.com/in/mohannad-ayman-2bba5419a/
-Mohammed Thabteh: https://www.linkedin.com/in/mohammdkhaled/
-Yasmeen Almoumani: https://www.linkedin.com/in/yasmeen-almoumani-544a35214/
+Malek Alobeidat:
+https://www.linkedin.com/in/malek-alobeidat-717361251/
+Mohammed Kayed: 
+https://www.linkedin.com/in/mohammad-kayed-b708bb290/
+Omama Akour:
+https://www.linkedin.com/in/omama-akour-426476267/
+Mohannad Ayman:
+https://www.linkedin.com/in/mohannad-ayman-2bba5419a/
+Mohammed Thabteh: 
+https://www.linkedin.com/in/mohammdkhaled/
+Yasmeen Almoumani: 
+https://www.linkedin.com/in/yasmeen-almoumani-544a35214/
 
 
 
