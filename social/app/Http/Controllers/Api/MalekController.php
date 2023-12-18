@@ -21,7 +21,7 @@ class MalekController extends Controller
                 'receiver_user_id' => 'required|exists:users,id',
                 'sender_user_id' => 'required|exists:users,id|different:receiver_user_id',
             ]);
-            
+
             //make sure request exist --return true|false
             $friendRequestExists = FriendRequest::where([
                 ['SenderUserID', $request->input('sender_user_id')],
@@ -45,14 +45,14 @@ class MalekController extends Controller
             if ($isFriends) {
                 return response()->json(['error' => 'Friends Relation already exists'], 422);
             }
-            
-    
+
+
             $friendRequest = FriendRequest::create([
                 'SenderUserID' => $request->input('sender_user_id'),
                 'ReceiverUserID' => $request->input('receiver_user_id'),
                 'Status' => 'pending',
             ]);
-    
+
             return response()->json(['message' => 'Friend request sent successfully', 'data' => $friendRequest], 201);
         } catch (ValidationException $e) {
             // Handle validation errors
@@ -121,11 +121,11 @@ class MalekController extends Controller
         } catch (ValidationException $e) {
             // Handle validation errors
             return response()->json(['error' => $e->getMessage()], 422);
-    
+
         } catch (ModelNotFoundException $e) {
             // Handle model not found errors
             return response()->json(['error' => 'Friend request not found or already responded'], 404);
-    
+
         } catch (\Exception $e) {
             // Handle other exceptions
             return response()->json(['error' => 'An error occurred while processing the request'], 500);
@@ -149,8 +149,6 @@ class MalekController extends Controller
 
 
 
-
-    
     public function updateUser(Request $request, $userId)
 {
     try {
@@ -247,9 +245,10 @@ public function test(Request $request)
             }else{
                 $friendRequest->update([
                     'Status' => 'accepted',
-                ]);
+                ]);=======
                 $friendRequest->save();
                 dd($friendRequest);
+
             }
         }
         return response()->json(['message' => 'Friend request responded successfully', 'data' => $friendRequest]);
