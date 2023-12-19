@@ -342,4 +342,59 @@ public function getUserPosts($userId)
 
     return response()->json($posts);
 }
+
+public function getUserPostsAndInteractions($userId)
+{
+    $posts = Post::where('UserID', $userId)
+        ->withCount('likes')
+        ->with(['comments' => function ($query) {
+            $query->orderBy('created_at', 'asc');
+        }])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return response()->json($posts);
+    }
+
+
+
+
+public function getUserAndFriendsPosts($userId)
+{
+    $posts = DB::table('posts as p')
+    ->leftJoin('likes as l', 'p.PostID', '=', 'l.PostID')
+    ->leftJoin('comments as c', 'p.PostID', '=', 'c.PostID')
+    ->where(function ($query) use ($userId) {
+        $query->where('p.UserID', $userId)
+            ->orWhereIn('p.UserID', function ($query) use ($userId) {
+                $query->select('SenderUserID')
+                    ->from('friend_requests')
+                    ->where('Status', 'accepted')
+                    ->where('ReceiverUserID', $userId);
+            })
+            ->orWhereIn('p.UserID', function ($query) use ($userId) {
+                $query->select('ReceiverUserID')
+                    ->from('friend_requests')
+                    ->where('Status', 'accepted')
+                    ->where('SenderUserID', $userId);
+            });
+    })
+    ->groupBy('p.PostID', 'p.Content', 'p.Media', 'p.created_at', 'c.CommentID', 'c.UserID', 'c.CommentText', 'c.created_at')
+    ->orderBy('p.created_at', 'desc')
+    ->orderBy('c.created_at', 'asc')
+    ->select(
+        'p.PostID',
+        'p.Content',
+        'p.Media',
+        'p.created_at as PostCreatedAt',
+        DB::raw('COUNT(l.LikeID) as TotalLikes'),
+        'c.CommentID',
+        'c.UserID as CommentUserID',
+        'c.CommentText',
+        'c.created_at as CommentCreatedAt'
+    )
+    ->get();
+    return response()->json($posts);
+}
+
 }

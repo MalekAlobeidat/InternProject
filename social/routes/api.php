@@ -63,7 +63,8 @@ Route::post('/test',[MalekController::class,'test']);
 
 Route::post('/updateUser/{id}',[MalekController::class,'updateUser']);
 Route::get('/friendsPosts/{id}',[MalekController::class,'friendsPosts']);
-Route::get('/getUserPosts/{id}',[MalekController::class,'getUserPosts']);
+Route::get('/getUserPostsAndInteractions/{id}',[MalekController::class,'getUserPostsAndInteractions']);
+Route::get('/getUserAndFriendsPosts/{id}',[MalekController::class,'getUserAndFriendsPosts']);
 
 
 
