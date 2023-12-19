@@ -23,8 +23,7 @@ class ReportController extends Controller
     $existingReport = Report::where('UserID', $UserID)
                             ->where('PostID', $PostID)
                             ->whereDate('created_at', Carbon::today())
-                            ->first();
-
+                            ->first();           
         if ($existingReport !== null && $existingReport->count() > 0) {
             return response()->json(['message' => 'already reported'], 201);
         }
