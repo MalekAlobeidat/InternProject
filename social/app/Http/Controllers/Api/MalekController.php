@@ -167,15 +167,7 @@ class MalekController extends Controller
         $user->RoleID = $request->filled('RoleID') ? $request->input('RoleID') : $user->RoleID;
         $user->OtherProfileInfo = $request->filled('OtherProfileInfo') ? $request->input('OtherProfileInfo') : $user->OtherProfileInfo;
 
-        // Update profile picture only if the input exists and is a valid file
-        // if ($request->hasFile('ProfilePicture') && $request->file('ProfilePicture')->isValid()) {
-        //     // Delete the old profile picture
-        //     Storage::disk('public')->delete($user->ProfilePicture);
 
-        //     // Upload the new profile picture
-        //     $imagePath = $request->file('ProfilePicture')->store('profile_pictures', 'public');
-        //     $user->ProfilePicture = $imagePath;
-        // }
         if ($request->hasFile('ProfilePicture') && $request->file('ProfilePicture')->isValid()) {
             // Delete the old profile picture
             if ($user->ProfilePicture) {
