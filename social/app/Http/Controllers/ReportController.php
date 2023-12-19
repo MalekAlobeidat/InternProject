@@ -18,6 +18,11 @@ class ReportController extends Controller
      */
     public function makeReport($UserID, $PostID)
     {
+        $report = Report::where('UserID', $UserID)->where('PostID', $PostID)->get();
+    
+        if ($report->isNotEmpty()) {
+            return response()->json(['message' => 'already reported'], 201);
+        }
         $report = new Report();
         $report->UserID = $UserID;
         $report->PostID = $PostID;

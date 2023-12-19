@@ -11,7 +11,6 @@ import { GoShareAndroid } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { input } from '@material-tailwind/react';
-
 function HomePage() {
   const [userid, setUserId] = useState('');
   const [privacyId, setPrivacyId] = useState('');
@@ -60,10 +59,10 @@ function HomePage() {
     const userId = sessionStorage.getItem('userid')
   
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/getUserPosts/${userId}`);
+      const response = await fetch(`http://127.0.0.1:8000/api/friendsPosts/${userId}`);
       if (response.ok) {
         const fetchedPosts = await response.json();
-        setPosts(fetchedPosts);
+        setPosts(fetchedPosts.posts); // Set only the posts array
         console.log(fetchedPosts); // Corrected the variable name here
       } else {
         console.error('Failed to fetch user posts');
@@ -71,7 +70,8 @@ function HomePage() {
     } catch (error) {
       console.error('Error occurred while fetching user posts:', error);
     }
-  };const deletePost = async (postId) => {
+  }
+  ;const deletePost = async (postId) => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
         method: 'DELETE',
@@ -89,24 +89,36 @@ function HomePage() {
       console.error('Error occurred while deleting post:', error);
     }
   };
+
+
+
   const updatePost = async (postId, updatedContent, updatedMedia) => {
+    console.log(updatedMedia);
     const userId = sessionStorage.getItem('userid');
-    const updatedPost = { Content: updatedContent };
-    const updatedMediaa = {Media : updatedMedia};
+    const formData = new FormData();
+  
+    // Append form data
+    formData.append('UserID', userId);
+    formData.append('Content', updatedContent);
+    formData.append('PrivacyID', 1);
+
+    // Check if updatedMedia is provided before appending it
+    if (updatedMedia) {
+      formData.append('Media', updatedMedia);
+    }
   
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedPost,updatedMediaa),
+        method: 'POST',
+        body: formData,
       });
-  
+
       if (response.ok) {
         // Handle success, e.g., show a success message
         alert('Post updated successfully');
-        fetchUserPosts();
+        const data = await response.json();
+        console.log(data);        
+        // fetchUserPosts();
       } else {
         // Handle error, e.g., show an error message
         console.error('Failed to update post');
@@ -116,6 +128,34 @@ function HomePage() {
     }
   };
   
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleLikeClick = async (postId) => {
+    try {
+      // Assuming post.UserID and post.PostID are available in your component state
+      const userId = sessionStorage.getItem('userid');
+
+      const response = await fetch('http://127.0.0.1:8000/api/like', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          UserID: userId,
+          PostID: postId,
+        }),
+      });
+
+      if (response.ok) {
+        // Update UI to reflect that the post is liked
+        setIsLiked(true);
+      } else {
+        console.error('Failed to like the post');
+      }
+    } catch (error) {
+      console.error('Error occurred while liking the post:', error);
+    }
+  };
 
 
   
@@ -257,7 +297,7 @@ function HomePage() {
                 </div> */}
                 <div className='addpostsection'>
                   <div className='imageandinput'>
-                  <img class="w-10 h-10 rounded-full" src={mohannad} alt="Rounded avatar" />
+                  <img class="w-10 h-10 rounded-full" src={sessionStorage.getItem('ProfilePicture')} alt="Rounded avatar" />
                     <input placeholder='Whats is in your mind'     
                     onChange={(e) => setContent(e.target.value)}
                    value={content}
@@ -265,22 +305,14 @@ function HomePage() {
                   </div>
                   <hr/>
                   <div className='three'>
-                    <div className='iconname'>
-                      <CiVideoOn style={{color:"red"}}/>
-                      Live Video
 
-                    </div>
                     <div className='iconname'>
   <IoImageOutline style={{color:'green'}} />
   <input type="file" style={{opacity: 0, position: 'absolute'}} onChange={handleFileChange}
  />
   Image/Video
 </div>
-                    <div className='iconname'>
-                      <IoHappyOutline style={{color:"yellow"}}/>
-                      Feeling
 
-                    </div>
                     <div className='iconname'>
                       <button type='submit' onClick={handleSubmit}>
                       ADD POST
@@ -295,54 +327,80 @@ function HomePage() {
     console.log(post); // You can log post details here if needed
 
     return (
-        <div className='postsection' key={post.PostID}>
+        <div className='postsection' key={post.PostID} style={{ height: post.Media ? 'auto' : '20vh' }}>
             <div className='imageandnameandicont'>
                 <div className='msh3arf'>
                     <div className='idk'>
-                        <img className="w-10 h-10 rounded-full" src={post.Media} alt="Rounded avatar" />
-                        <h3>User ID : {post.UserID}</h3>
+                        <img className="w-10 h-10 rounded-full" src={post.ProfilePicture} alt="Rounded avatar" />
+                        {/* <h3>User ID : {post.UserID}</h3> */}
+                        <h3>{post.userName}</h3>
                     </div>
-                    <div className='closedots'>
+                    <div className='closedots' style={{ display: sessionStorage.getItem('userid') == post.UserID ? 'block' : 'none' }}>
                         <div>
                         <HiDotsHorizontal
-  style={{ cursor: 'pointer' }}
-  onClick={() => {
-    const updatedContent = prompt('Enter updated content:', post.Content);
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*'; // Adjust this based on the accepted file types
-    fileInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      updatePost(post.PostID, updatedContent, fileInput);
-    });
-    fileInput.click();
-  }}
-/>           </div>
-                        <div>
+ style={{ cursor: 'pointer' }}
+ onClick={() => {
+   // Prompt for updated content
+   const updatedContent = prompt('Enter updated content:', post.Content);
+ 
+   // Check if the user cancelled or entered empty content
+   if (updatedContent === null || updatedContent.trim() === '') {
+     return; // Do nothing if cancelled or empty content
+   }
+ 
+   // Create a file input element
+   const fileInput = document.createElement('input');
+   fileInput.type = 'file';
+   fileInput.accept = 'image/*'; // Adjust this based on the accepted file types
+ 
+   // Event listener for file input change
+   fileInput.addEventListener('change', (event) => {
+     // Check if a file was selected
+     if (event.target.files.length > 0) {
+       const file = event.target.files[0];
+       // Assuming updatePost expects postId, updatedContent, and file as parameters
+       updatePost(post.PostID, updatedContent, file);
+     } else {
+       // Handle the case where the user didn't select a file
+       alert('Please select an image file.');
+     }
+   });
+ 
+   // Trigger the file input click to prompt the user to select a file
+   fileInput.click();
+ }}
+/>
+
+           </div>
+                        <div style={{ display: sessionStorage.getItem('userid') == post.UserID ? 'block' : 'none' }}>
                             <IoMdClose style={{ cursor: 'pointer' }}   onClick={() => deletePost(post.PostID)}/>
                         </div>
                     </div>
                 </div>
                 <hr/>
-                <div className='zhgt'>
+                <div className='zhgt' style={{ overflow: 'scroll' }}>
                     {post.Content}
                 </div>
             </div>
-            <div className='forimgae'>
-                <img src={`./${post.Media}`}  />
-            </div>
+            <div className='forimgae' style={{ display: post.Media ? 'block' : 'none' }}>
+              {post.Media && <img src={post.Media} alt="Post Media" />}
+            </div>  
             <div className='likeandstuff'>
-                <div className='likelike'>
-                    <AiOutlineLike/>
-                    Like
-                </div>
+            <div
+              className='likelike'
+              onClick={() => handleLikeClick(post.PostID)}  // Pass post.PostID to the handler
+              style={{ cursor: 'pointer' }}
+            >
+              <AiOutlineLike />
+              {isLiked ? 'Liked' : 'Like'}
+            </div>
                 <div className='likelike'>
                     <FaRegCommentAlt/>
                     Comment
                 </div>
                 <div className='likelike'>
                     <GoShareAndroid/>
-                    Share
+                    Report
                 </div>
             </div>
         </div>
@@ -353,8 +411,6 @@ function HomePage() {
         </div>
 
     </div>
-    
-    
     </>
   )
 }

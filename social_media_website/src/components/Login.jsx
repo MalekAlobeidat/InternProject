@@ -25,6 +25,8 @@
               sessionStorage.setItem('RoldID' , data.user.RoleID)
               sessionStorage.setItem('token' , data.token)
               sessionStorage.setItem('userid' , data.user.id)
+              sessionStorage.setItem('userid' , data.user.id)
+              sessionStorage.setItem('ProfilePicture' , data.user.ProfilePicture)
               window.location.href='HomePage'
               // Add any additional logic you need for a successful login
             } else {

@@ -39,7 +39,7 @@ Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/posts', [PostController::class, 'index']);
 Route::post('/posts', [PostController::class, 'store']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
-Route::put('/posts/{post}', [PostController::class, 'update']);
+Route::post('/posts/{post}', [PostController::class, 'update']);
 Route::delete('/posts/{post}', [PostController::class, 'destroy']);
 ///////////////////////////
 
@@ -53,10 +53,22 @@ Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 Route::post('/like', [LikeController::class, 'like']);
 Route::delete('/unlike', [LikeController::class, 'unlike']);
 
+
+
+
+
 Route::post('/friendRequest',[MalekController::class,'friendRequest']);
-Route::post('/respond',[MalekController::class,'respond']);
+// Route::post('/respond',[MalekController::class,'respond']);
 Route::post('/test',[MalekController::class,'test']);
+
 Route::post('/updateUser/{id}',[MalekController::class,'updateUser']);
+Route::get('/friendsPosts/{id}',[MalekController::class,'friendsPosts']);
+Route::get('/getUserPosts/{id}',[MalekController::class,'getUserPosts']);
+
+
+
+
+
 
 // route for creating report from user
 Route::post('/reports/{UserID}/{PostID}', [ReportController::class, 'makeReport']);

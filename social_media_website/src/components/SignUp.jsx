@@ -8,7 +8,7 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
         e.preventDefault();
-    
+   
         try {
           const response = await fetch('http://localhost:8000/api/signup', {
             method: 'POST',
