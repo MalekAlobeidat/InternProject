@@ -361,40 +361,43 @@ public function getUserPostsAndInteractions($userId)
 
 public function getUserAndFriendsPosts($userId)
 {
-    $posts = DB::table('posts as p')
-    ->leftJoin('likes as l', 'p.PostID', '=', 'l.PostID')
-    ->leftJoin('comments as c', 'p.PostID', '=', 'c.PostID')
+    $userAndFriendsPosts = Post::with(['user', 'likes' => function ($query) {
+        $query->select('PostID', DB::raw('COUNT(*) as TotalLikes'))
+            ->groupBy('PostID');
+    }])
+    ->with(['comments'])
     ->where(function ($query) use ($userId) {
-        $query->where('p.UserID', $userId)
-            ->orWhereIn('p.UserID', function ($query) use ($userId) {
+        $query->where('UserID', $userId)
+            ->orWhereIn('UserID', function ($query) use ($userId) {
                 $query->select('SenderUserID')
                     ->from('friend_requests')
                     ->where('Status', 'accepted')
                     ->where('ReceiverUserID', $userId);
             })
-            ->orWhereIn('p.UserID', function ($query) use ($userId) {
+            ->orWhereIn('UserID', function ($query) use ($userId) {
                 $query->select('ReceiverUserID')
                     ->from('friend_requests')
                     ->where('Status', 'accepted')
                     ->where('SenderUserID', $userId);
             });
     })
-    ->groupBy('p.PostID', 'p.Content', 'p.Media', 'p.created_at', 'c.CommentID', 'c.UserID', 'c.CommentText', 'c.created_at')
-    ->orderBy('p.created_at', 'desc')
-    ->orderBy('c.created_at', 'asc')
-    ->select(
-        'p.PostID',
-        'p.Content',
-        'p.Media',
-        'p.created_at as PostCreatedAt',
-        DB::raw('COUNT(l.LikeID) as TotalLikes'),
-        'c.CommentID',
-        'c.UserID as CommentUserID',
-        'c.CommentText',
-        'c.created_at as CommentCreatedAt'
-    )
+    ->orderBy('created_at', 'desc')
     ->get();
-    return response()->json($posts);
+
+// Rename the likes_count property to TotalLikes for consistency
+$userAndFriendsPosts->transform(function ($post) {
+    $post->TotalLikes = $post->likes->first()->TotalLikes ?? 0;
+    unset($post->likes);
+
+    // Include user name and profile picture in the post
+    $post->UserName = $post->user->name ?? null;
+    $post->UserProfilePicture = $post->user->ProfilePicture ?? null;
+
+    unset($post->user);
+
+    return $post;
+});
+    return response()->json($userAndFriendsPosts);
 }
 
 }
