@@ -68,11 +68,6 @@ Route::get('/getUserAndFriendsPosts/{id}',[MalekController::class,'getUserAndFri
 Route::get('/getFriendsCount/{id}',[MalekController::class,'getFriendsCount']);
 Route::get('/getUserFriends/{id}',[MalekController::class,'getUserFriends']);
 
-
-
-
-
-
 // route for creating report from user
 Route::post('/reports/{UserID}/{PostID}', [ReportController::class, 'makeReport']);
 // route for handling moderator response on reports
