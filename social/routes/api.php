@@ -62,9 +62,9 @@ Route::post('/updateUser/{id}',[MalekController::class,'updateUser']);
 Route::post('/reports/{UserID}/{PostID}', [ReportController::class, 'makeReport']);
 // route for handling moderator response on reports
 Route::get('/reports', [ModeratorController::class, 'reports']);
-Route::get('/reports/{ReporID}', [ModeratorController::class, 'showReport']);
-Route::delete('/reports/{ReporID}', [ModeratorController::class, 'deleteReport']);
-Route::put('/reports/{ReporID}/accept', [ModeratorController::class, 'acceptReport']);
+Route::get('/reports/{PostID}', [ModeratorController::class, 'showReport']);
+Route::delete('/reports/{PostID}', [ModeratorController::class, 'deleteReport']);
+Route::put('/reports/{PostID}/accept', [ModeratorController::class, 'acceptReport']);
 // analytic routes
 Route::get('/analytics/likes', [AnalyticsController::class, 'getLikes']);
 Route::get('/analytics/comments', [AnalyticsController::class, 'getComments']);
