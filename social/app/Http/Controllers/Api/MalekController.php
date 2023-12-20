@@ -400,4 +400,19 @@ $userAndFriendsPosts->transform(function ($post) {
     return response()->json($userAndFriendsPosts);
 }
 
+
+function getFriendsCount($userId) {
+    $friendsCount = FriendRequest::where(function ($query) use ($userId) {
+            $query->where('SenderUserID', $userId)
+                ->orWhere('ReceiverUserID', $userId);
+        })
+        ->where('Status', 'accepted')
+        ->count();
+        return response()->json(['Friends' =>$friendsCount]);
+
+}
+
+
+
+
 }
