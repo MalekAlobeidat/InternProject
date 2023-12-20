@@ -11,7 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ModeratorController;
-
+use App\Http\Controllers\FriendController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,3 +86,8 @@ Route::get('/analytics/report', [AnalyticsController::class, 'analyticsReport'])
 Route::post('/', [UserController::class, 'createUser']);
 Route::put('/{id}', [UserController::class, 'updateUser']);
 Route::delete('/{id}', [UserController::class, 'deleteUser']);
+////////////////////////////////////////
+Route::middleware('auth:sanctum')->get('/users/profile/{userId}', [UserController::class, 'showProfile']);
+Route::get('/are-friends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
+// Route::get('/friends/areFriends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
+
