@@ -2,16 +2,16 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MalekController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Api\MalekController;
 use App\Http\Controllers\ModeratorController;
-use App\Http\Controllers\FriendController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -65,11 +65,8 @@ Route::post('/updateUser/{id}',[MalekController::class,'updateUser']);
 Route::get('/friendsPosts/{id}',[MalekController::class,'friendsPosts']);
 Route::get('/getUserPostsAndInteractions/{id}',[MalekController::class,'getUserPostsAndInteractions']);
 Route::get('/getUserAndFriendsPosts/{id}',[MalekController::class,'getUserAndFriendsPosts']);
-
-
-
-
-
+Route::get('/getFriendsCount/{id}',[MalekController::class,'getFriendsCount']);
+Route::get('/getUserFriends/{id}',[MalekController::class,'getUserFriends']);
 
 // route for creating report from user
 Route::post('/reports/{UserID}/{PostID}', [ReportController::class, 'makeReport']);
@@ -86,8 +83,3 @@ Route::get('/analytics/report', [AnalyticsController::class, 'analyticsReport'])
 Route::post('/', [UserController::class, 'createUser']);
 Route::put('/{id}', [UserController::class, 'updateUser']);
 Route::delete('/{id}', [UserController::class, 'deleteUser']);
-////////////////////////////////////////
-Route::middleware('auth:sanctum')->get('/users/profile/{userId}', [UserController::class, 'showProfile']);
-Route::get('/are-friends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
-// Route::get('/friends/areFriends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
-

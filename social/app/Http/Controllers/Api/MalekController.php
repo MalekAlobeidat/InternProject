@@ -400,4 +400,36 @@ $userAndFriendsPosts->transform(function ($post) {
     return response()->json($userAndFriendsPosts);
 }
 
+
+function getFriendsCount($userId) {
+    $friendsCount = FriendRequest::where(function ($query) use ($userId) {
+            $query->where('SenderUserID', $userId)
+                ->orWhere('ReceiverUserID', $userId);
+        })
+        ->where('Status', 'accepted')
+        ->count();
+        return response()->json(['Friends' =>$friendsCount]);
+
+}
+
+
+function getUserFriends($userId) {
+    $userFriends = User::join('friend_requests', function ($join) use ($userId) {
+            $join->on('users.id', '=', 'friend_requests.SenderUserID')
+                ->where('friend_requests.ReceiverUserID', $userId)
+                ->where('friend_requests.Status', 'accepted')
+                ->orWhere(function ($query) use ($userId) {
+                    $query->on('users.id', '=', 'friend_requests.ReceiverUserID')
+                        ->where('friend_requests.SenderUserID', $userId)
+                        ->where('friend_requests.Status', 'accepted');
+                });
+        })
+        ->select('users.id as FriendID', 'users.name as FriendName', 'users.ProfilePicture as FriendProfilePicture')
+        ->get();
+
+        return response()->json(['userFriends' =>$userFriends]);
+
+
+}
+
 }
