@@ -2,15 +2,16 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MalekController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Api\MalekController;
 use App\Http\Controllers\ModeratorController;
+use App\Http\Controllers\FriendRequestController;
 
 
 /*
@@ -83,3 +84,8 @@ Route::get('/analytics/report', [AnalyticsController::class, 'analyticsReport'])
 Route::post('/', [UserController::class, 'createUser']);
 Route::put('/{id}', [UserController::class, 'updateUser']);
 Route::delete('/{id}', [UserController::class, 'deleteUser']);
+// routes for profile status on friendship
+    Route::get('/friend-requests/{senderUserId}/{receiverUserId}', [FriendRequestController::class, 'friendRequestStatus']);
+    Route::post('/friend-requests/add', [FriendRequestController::class, 'add'])->name('friend-requests.add');
+    Route::delete('/friend-requests/cancel/{requestId}', [FriendRequestController::class, 'cancelRequest']);
+    Route::delete('/friend-requests/delete', [FriendRequestController::class, 'delete']);
