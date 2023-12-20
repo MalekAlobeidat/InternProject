@@ -19,13 +19,20 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'UserID' => 'required',
             'Content' => 'nullable|string',
-            'Media' => 'required|string',
+            'Media' => 'required|nullable|file',
             'PrivacyID' => 'required',
         ]);
 
-        $post = Post::create($validatedData);
+        try {
+            $mediaPath = $request->file('Media')->store('media', 'public');
+            $validatedData['Media'] ='http://127.0.0.1:8000/storage/' .$mediaPath;
 
-        return response()->json(['post' => $post], 201);
+            $post = Post::create($validatedData);
+
+            return response()->json(['post' => $post], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'File upload failed'], 500);
+        }
     }
 
     public function show(Post $post)
@@ -34,17 +41,26 @@ class PostController extends Controller
     }
 
     public function update(Request $request, Post $post)
-    {
-        $validatedData = $request->validate([
-            'Content' => 'nullable|string',
-            'Media' => 'string',
-            'PrivacyID' => 'nullable',
-        ]);
+{
+    $validatedData = $request->validate([
+        'Content' => 'nullable|string',
+        'Media' => 'nullable|file',
+        'PrivacyID' => 'nullable',
+    ]);
 
-        $post->update($validatedData);
-
-        return response()->json(['post' => $post], 200);
+    if ($request->hasFile('Media')) {
+        try {
+            $mediaPath = $request->file('Media')->store('media', 'public');
+            $validatedData['Media'] = 'http://127.0.0.1:8000/storage/' .$mediaPath;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'File upload failed'], 500);
+        }
     }
+
+    $post->update($validatedData);
+
+    return response()->json(['post' => $post], 200);
+}
 
     public function destroy(Post $post)
     {

@@ -32,23 +32,7 @@ class ModeratorController extends Controller
         return response()->json($reportData);
     }
 }
-    /**
-     * Display the specified resource.
-     */
-    // public function showReport($PostID)
-    // {
-    //     $reports = Report::find('PostID',$PostID);
 
-    //     $post = Post::findOrFail($PostID);
-    //     // $privacyId = $post->PrivacyID;
-
-    //     // $privacySetting = PrivacySetting::findOrFail($privacyId);
-    //     // $privacyName = $privacySetting->PrivacyName;
-
-    //     // $post->privacyName = $privacyName;
-
-    //     return response()->json($post);
-    // }
     public function acceptReport($PostID)
     {
     // Report::where('PostID', $PostID)->delete();

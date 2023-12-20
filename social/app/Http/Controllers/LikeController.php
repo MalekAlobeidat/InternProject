@@ -13,9 +13,16 @@ class LikeController extends Controller
             'UserID' => 'required',
             'PostID' => 'required',
         ]);
-
+        // Use ->where instead of ->andWhere
+        $like = Like::where('UserID', $request->UserID)->where('PostID', $request->PostID)->get();
+    
+        if ($like->isNotEmpty()) {
+            return response()->json(['message' => 'already liked'], 201);
+        }
+    
+        // If the user has not already liked the post, you can create the like record
         $like = Like::create($validatedData);
-
+    
         return response()->json(['like' => $like], 201);
     }
 
