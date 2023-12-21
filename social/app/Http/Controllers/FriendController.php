@@ -13,6 +13,7 @@ class FriendController extends Controller
 {
     // ... (other methods)
 
+
    /**
      * Check if two users are friends.
      *
@@ -20,6 +21,7 @@ class FriendController extends Controller
      * @param int $userId2
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function areFriends($userId1, $userId2)
     {
         try {
@@ -58,5 +60,6 @@ class FriendController extends Controller
     }
 
 
- 
+
+    // ... (other methods)
 }

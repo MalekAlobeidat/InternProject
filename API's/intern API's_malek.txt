@@ -1,0 +1,71 @@
+POST
+Send friend request 
+http://127.0.0.1:8000/api/friendRequest 
+
+{
+"sender_user_id":1,
+"receiver_user_id":3
+}
+
+
+POST
+Response to the  friend request 
+http://127.0.0.1:8000/api/test 
+
+
+{
+"sender_user_id":1,
+"receiver_user_id":3,
+"response":"reject"
+}
+OR
+{
+"sender_user_id":1,
+"receiver_user_id":3,
+"response":"accept"
+}
+
+
+POST
+Update user information 
+http://127.0.0.1:8000/api/updateUser/{id}
+
+
+Use form-data 
+{
+name
+email
+RoleID
+ProfilePicture         
+OtherProfileInfo
+}
+
+
+
+
+Method:Get 
+Get all friends posts and my posts 
+http://127.0.0.1:8000/api/friendsPosts/{user_id}
+
+Method:Get 
+Get all my posts 
+http://127.0.0.1:8000/api/friendsPosts/{user_id}
+getUserPosts
+
+
+Method:Get 
+Get all my posts with number of likes and comments 
+http://127.0.0.1:8000/api/getUserPostsAndInteractions/{user_id}
+
+Method:Get 
+Get all friends posts and my posts   with number of likes and comments 
+http://127.0.0.1:8000/api/getUserAndFriendsPosts/{user_id}
+
+
+Method:Get 
+Get friends count for certain user
+http://127.0.0.1:8000/api/getFriendsCount/{UserID}   
+
+Method:Get 
+get me the User friends with friend id, name,profilepic
+http://127.0.0.1:8000/api/getFriendsCount/{UserID}  

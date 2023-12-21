@@ -1,4 +1,4 @@
-// import { data } from 'jquery';
+import { data } from 'jquery';
 import React, { useState, useEffect } from 'react';
 
 function AddpostMethod() {

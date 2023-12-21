@@ -2,16 +2,18 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MalekController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Api\MalekController;
 use App\Http\Controllers\ModeratorController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\FriendRequestController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -65,11 +67,8 @@ Route::post('/updateUser/{id}',[MalekController::class,'updateUser']);
 Route::get('/friendsPosts/{id}',[MalekController::class,'friendsPosts']);
 Route::get('/getUserPostsAndInteractions/{id}',[MalekController::class,'getUserPostsAndInteractions']);
 Route::get('/getUserAndFriendsPosts/{id}',[MalekController::class,'getUserAndFriendsPosts']);
-
-
-
-
-
+Route::get('/getFriendsCount/{id}',[MalekController::class,'getFriendsCount']);
+Route::get('/getUserFriends/{id}',[MalekController::class,'getUserFriends']);
 
 // route for creating report from user
 Route::post('/reports/{UserID}/{PostID}', [ReportController::class, 'makeReport']);
@@ -91,3 +90,8 @@ Route::middleware('auth:sanctum')->get('/users/profile/{userId}', [UserControlle
 Route::get('/are-friends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
 // Route::get('/friends/areFriends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
 
+// routes for the profile status
+Route::get('/friend-requests/{senderUserId}/{receiverUserId}', [FriendRequestController::class, 'friendRequestStatus']);
+Route::post('/friend-requests/add', [FriendRequestController::class, 'add'])->name('friend-requests.add');
+Route::delete('/friend-requests/cancel/{requestId}', [FriendRequestController::class, 'cancelRequest']);
+Route::delete('/friend-requests/delete', [FriendRequestController::class, 'delete']);
