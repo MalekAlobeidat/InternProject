@@ -55,7 +55,7 @@ Route::post('/like', [LikeController::class, 'like']);
 Route::delete('/unlike', [LikeController::class, 'unlike']);
 
 
-
+Route::get('/privacysettings', [ApiController::class, 'getAllPrivacySettings']);
 
 
 Route::post('/friendRequest',[MalekController::class,'friendRequest']);

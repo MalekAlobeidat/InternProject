@@ -25,9 +25,14 @@ class CommentController extends Controller
         return response()->json(['comment' => $comment], 201);
     }
 
-    public function show(Comment $comment)
+    public function show($postId)
     {
-        return response()->json(['comment' => $comment], 200);
+        $postComments = Comment::where('PostID', $postId)
+        ->orderBy('created_at', 'desc')
+        ->get();
+        return response()->json(['comment' => $postComments], 201);
+
+    // return $postComments;
     }
 
     public function update(Request $request, Comment $comment)

@@ -12,7 +12,11 @@ class PrivacysettingController extends Controller
      */
     public function index()
     {
-        //
+        $privacySettings = PrivacySetting::all();
+
+        return response()->json(['privacy' => $privacySettings], 201);
+
+    
     }
 
     /**

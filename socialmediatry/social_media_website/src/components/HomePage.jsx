@@ -12,21 +12,49 @@ import { IoMdClose } from "react-icons/io";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { input } from '@material-tailwind/react';
 function HomePage() {
-  const [userid, setUserId] = useState('');
-  const [privacyId, setPrivacyId] = useState('');
-  const [content, setContent] = useState('');
-  const [media, setMedia] = useState(null);
-  const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState([]);
 
+  // State for various form fields
+  const [userid, setUserId] = useState('');
+  const [privacyId, setPrivacyId] = useState(null);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+    const [content, setContent] = useState('');
+  const [media, setMedia] = useState(null);
+
+  // State for posts and likes
+  const [posts, setPosts] = useState([]);
+  const [likeCount, setLikeCount] = useState(0); // Initialize with 0
+  const [isLiked, setIsLiked] = useState(false);
+  const handlePrivacySelection = (selectedPrivacyId) => {
+    setPrivacyId(selectedPrivacyId);
+    setShowPrivacyModal(false);
+  };
+
+
+  // Handle file change for uploading media
   const handleFileChange = (e) => {
-    // Assuming you only want to upload a single file
     setMedia(e.target.files[0]);
   };
+
+  // Handle form submission for creating a new post
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const privacyId = 1;
-    const userId  = sessionStorage.getItem('userid')
-       const formData = new FormData();
+    const userId = sessionStorage.getItem('userid');
+
+    if (privacyId === null) {
+      // Show alert if privacyId is not selected
+      const selectedPrivacy = window.prompt('Choose Privacy: Enter 1 for Everyone, 2 for Friends Only');
+      if (selectedPrivacy === '1' || selectedPrivacy === '2') {
+        setPrivacyId(parseInt(selectedPrivacy));
+      } else {
+        // If the input is invalid, you can handle it accordingly
+        window.alert('Invalid input. Please enter 1 or 2.');
+        return;
+      }
+    
+    }
+
+    const formData = new FormData();
     formData.append('UserID', userId);
     formData.append('PrivacyID', privacyId);
     formData.append('Content', content);
@@ -39,14 +67,10 @@ function HomePage() {
       });
 
       if (response.ok) {
-        // Handle success, e.g., show a success message
-        console.log('Post created successfully');
         const responseData = await response.json();
         sessionStorage.setItem('userId', responseData.userId);
-        console.log(responseData.userId);
         fetchUserPosts();
       } else {
-        // Handle error, e.g., show an error message
         console.error('Failed to create post');
       }
     } catch (error) {
@@ -54,35 +78,42 @@ function HomePage() {
     }
   };
 
+  // Fetch user posts on component mount
+  useEffect(() => {
+    fetchUserPosts();
+  }, []);
+
+  // Fetch user posts from the API
   const fetchUserPosts = async () => {
-    console.log(userid);
-    const userId = sessionStorage.getItem('userid')
-  
+    const userId = sessionStorage.getItem('userid');
+
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/friendsPosts/${userId}`);
       if (response.ok) {
         const fetchedPosts = await response.json();
-        setPosts(fetchedPosts.posts); // Set only the posts array
-        console.log(fetchedPosts); // Corrected the variable name here
+        setPosts(fetchedPosts);
+        // Update like count if available in the fetched post
+        setLikeCount(fetchedPosts.likeCount || 0);
       } else {
         console.error('Failed to fetch user posts');
       }
     } catch (error) {
       console.error('Error occurred while fetching user posts:', error);
     }
-  }
-  ;const deletePost = async (postId) => {
+  };
+
+  // Delete a post
+  const deletePost = async (postId) => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
         method: 'DELETE',
       });
 
+
       if (response.ok) {
-        // Handle success, e.g., show a success message
         alert('Post deleted successfully');
         fetchUserPosts();
       } else {
-        // Handle error, e.g., show an error message
         console.error('Failed to delete post');
       }
     } catch (error) {
@@ -90,23 +121,19 @@ function HomePage() {
     }
   };
 
-
-
+  // Update a post
   const updatePost = async (postId, updatedContent, updatedMedia) => {
-    console.log(updatedMedia);
     const userId = sessionStorage.getItem('userid');
     const formData = new FormData();
-  
-    // Append form data
+
     formData.append('UserID', userId);
     formData.append('Content', updatedContent);
     formData.append('PrivacyID', 1);
 
-    // Check if updatedMedia is provided before appending it
     if (updatedMedia) {
       formData.append('Media', updatedMedia);
     }
-  
+
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
         method: 'POST',
@@ -114,26 +141,20 @@ function HomePage() {
       });
 
       if (response.ok) {
-        // Handle success, e.g., show a success message
         alert('Post updated successfully');
-        const data = await response.json();
-        console.log(data);        
-        // fetchUserPosts();
+        fetchUserPosts();
       } else {
-        // Handle error, e.g., show an error message
         console.error('Failed to update post');
       }
     } catch (error) {
       console.error('Error occurred while updating post:', error);
     }
   };
-  
-  const [isLiked, setIsLiked] = useState(false);
 
+  // Handle like click for a post
   const handleLikeClick = async (postId) => {
     try {
-      // Assuming post.UserID and post.PostID are available in your component state
-      const userId = sessionStorage.getItem('userid');
+      const UserID = sessionStorage.getItem('userid');
 
       const response = await fetch('http://127.0.0.1:8000/api/like', {
         method: 'POST',
@@ -141,14 +162,14 @@ function HomePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          UserID: userId,
+          UserID: UserID,
           PostID: postId,
         }),
       });
 
       if (response.ok) {
-        // Update UI to reflect that the post is liked
         setIsLiked(true);
+        setLikeCount((prevCount) => prevCount + 1);
       } else {
         console.error('Failed to like the post');
       }
@@ -157,13 +178,65 @@ function HomePage() {
     }
   };
 
-
+  // Fetch comments for a post
+  const fetchComments = async (postId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/comments/${postId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data);
+        console.log(data);
+      } else {
+        console.error('Failed to fetch comments:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+  const addComment = async (postId, commentText) => {
+    try {
+      const userId = sessionStorage.getItem('userid');
   
-  useEffect(() => {
-    fetchUserPosts();
-  }, []);
-
+      const response = await fetch('http://127.0.0.1:8000/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          UserID: userId,
+          PostID: postId,
+          commentText: commentText,
+        }),
+      });
   
+      if (response.ok) {
+        // Comment added successfully
+        console.log('Comment added successfully');
+        // Fetch comments again to update the list
+        fetchComments(postId);
+      } else {
+        // Handle error, e.g., show an error message
+        console.error('Failed to add comment');
+      }
+    } catch (error) {
+      console.error('Error occurred while adding comment:', error);
+    }
+  };
+  
+  
+  // Use the addComment function where you want to add a comment
+  // For example, you can call it when a user submits a comment form
+  
+  // Inside your component, where you handle comment submission
+  const handleCommentSubmit = (postId, commentText) => {
+    // Call the addComment function with the post ID and comment text
+    addComment(postId, commentText);
+  };
+  
+  // ...
+  
+  
+
   return (
     <>
 
@@ -295,12 +368,19 @@ function HomePage() {
                     <p>Mohannad Ayman</p>
                 </div>
                 </div> */}
+                    {/* {showPrivacyModal && (
+                   <div className="privacy-modal">
+                   <p>Choose Privacy:</p>
+                   <button onClick={() => handlePrivacySelection(1)}>EvryOne</button>
+                   <button onClick={() => handlePrivacySelection(2)}>Frineds Only</button>
+                   </div>
+                   )} */}
                 <div className='addpostsection'>
                   <div className='imageandinput'>
                   <img class="w-10 h-10 rounded-full" src={sessionStorage.getItem('ProfilePicture')} alt="Rounded avatar" />
                     <input placeholder='Whats is in your mind'     
                     onChange={(e) => setContent(e.target.value)}
-                   value={content}
+                    value={content}
 />
                   </div>
                   <hr/>
@@ -324,16 +404,16 @@ function HomePage() {
                   </div>
                 </div>
                 {posts.map((post) => {
-    console.log(post); // You can log post details here if needed
 
     return (
-        <div className='postsection' key={post.PostID} style={{ height: post.Media ? 'auto' : '20vh' }}>
-            <div className='imageandnameandicont'>
-                <div className='msh3arf'>
-                    <div className='idk'>
-                        <img className="w-10 h-10 rounded-full" src={post.ProfilePicture} alt="Rounded avatar" />
-                        {/* <h3>User ID : {post.UserID}</h3> */}
-                        <h3>{post.userName}</h3>
+      <div className='postsection' key={post.PostID} style={{ height: post.Media ? 'auto' : '20vh', border: post.PrivacyID === '1' ? '2px solid red' : (post.PrivacyID === '2' ? '2px solid green' : 'none') }}>
+      <div className='imageandnameandicont'>
+        <div className='msh3arf'>
+          <div className='idk'>
+            <img className="w-10 h-10 rounded-full" src={post.ProfilePicture} alt="Rounded avatar" />
+            {/* <h3>User ID : {post.UserID}</h3> */}
+            <h3>{post.userName}</h3>
+            <h3>{post.PrivacyID}</h3>
                     </div>
                     <div className='closedots' style={{ display: sessionStorage.getItem('userid') == post.UserID ? 'block' : 'none' }}>
                         <div>
@@ -378,10 +458,10 @@ function HomePage() {
                     </div>
                 </div>
                 <hr/>
-                <div className='zhgt' style={{ overflow: 'scroll' }}>
+            </div>
+                <div className='zhgt' style={{ overflow: 'auto' ,height:"auto"}}>
                     {post.Content}
                 </div>
-            </div>
             <div className='forimgae' style={{ display: post.Media ? 'block' : 'none' }}>
               {post.Media && <img src={post.Media} alt="Post Media" />}
             </div>  
@@ -392,17 +472,45 @@ function HomePage() {
               style={{ cursor: 'pointer' }}
             >
               <AiOutlineLike />
-              {isLiked ? 'Liked' : 'Like'}
+              {isLiked ? 'Liked' : 'Like'} {likeCount > 0 && `(1)`}
+
             </div>
                 <div className='likelike'>
+                  
                     <FaRegCommentAlt/>
-                    Comment
+                    <div className="comments-section" >
+                    {comments.length > 0 ? (
+  <div className="comments-section">
+    {comments.map((comment) => (
+      <div key={comment.CommentID} className="comment" style={{display:"flex",flexDirection:"column"}}>
+        {console.log(comment)}
+        <strong>{comment.userName}</strong>: {comment.commentText}
+      </div>
+    ))}
+  </div>
+) : (
+  <p>No comments available.</p>
+)}
+
+      </div>
+      
+
+      {/* Add a button to fetch comments when clicked */}
+      <button onClick={() => fetchComments(post.PostID)}> </button>
+      
                 </div>
                 <div className='likelike'>
                     <GoShareAndroid/>
                     Report
                 </div>
-            </div>
+            </div><form onSubmit={(e) => {
+  e.preventDefault();
+  const commentText = e.target.elements.commentText.value;
+  handleCommentSubmit(post.PostID, commentText);
+}}>
+  <input type="text" name="commentText" placeholder="Type your comment" />
+  <button type="submit">Add Comment</button>
+</form>
         </div>
     );
 })}
