@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use App\Models\FriendRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class UserController extends Controller
 {
@@ -75,4 +78,22 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User deleted successfully']);
     }
+    public function showProfile(Request $request, $userId)
+{
+    $authUser = $request->user();
+
+    // Check if the user is authenticated
+    if (!$authUser) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    try {
+        // Rest of your code to show the user's profile...
+    } catch (ModelNotFoundException $e) {
+        return response()->json([
+            'message' => 'User not found.',
+            'exception_message' => $e->getMessage(),
+        ], 404);
+    }}
+
 }

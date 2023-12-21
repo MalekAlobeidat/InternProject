@@ -89,4 +89,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class, 'UserID');
     }
+    public function publicPosts()
+    {
+        return $this->posts()->where('privacy_id', 2); // Assuming 2 represents 'Everyone' privacy setting
+    }
 }
