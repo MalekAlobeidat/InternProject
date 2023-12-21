@@ -11,6 +11,7 @@ class FriendRequestController extends Controller
     // {
     //     $this->middleware('auth:sanctum');
     // }
+
     public function friendRequestStatus($senderUserId, $receiverUserId)
     {
         $friendRequest = FriendRequest::where('SenderUserID', $senderUserId)

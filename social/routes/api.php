@@ -11,6 +11,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Api\MalekController;
 use App\Http\Controllers\ModeratorController;
+use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FriendRequestController;
 
 
@@ -84,8 +85,13 @@ Route::get('/analytics/report', [AnalyticsController::class, 'analyticsReport'])
 Route::post('/', [UserController::class, 'createUser']);
 Route::put('/{id}', [UserController::class, 'updateUser']);
 Route::delete('/{id}', [UserController::class, 'deleteUser']);
-// routes for profile status on friendship
-    Route::get('/friend-requests/{senderUserId}/{receiverUserId}', [FriendRequestController::class, 'friendRequestStatus']);
-    Route::post('/friend-requests/add', [FriendRequestController::class, 'add'])->name('friend-requests.add');
-    Route::delete('/friend-requests/cancel/{requestId}', [FriendRequestController::class, 'cancelRequest']);
-    Route::delete('/friend-requests/delete', [FriendRequestController::class, 'delete']);
+////////////////////////////////////////
+Route::middleware('auth:sanctum')->get('/users/profile/{userId}', [UserController::class, 'showProfile']);
+Route::get('/are-friends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
+// Route::get('/friends/areFriends/{userId1}/{userId2}', [FriendController::class, 'areFriends']);
+
+// routes for the profile status
+Route::get('/friend-requests/{senderUserId}/{receiverUserId}', [FriendRequestController::class, 'friendRequestStatus']);
+Route::post('/friend-requests/add', [FriendRequestController::class, 'add'])->name('friend-requests.add');
+Route::delete('/friend-requests/cancel/{requestId}', [FriendRequestController::class, 'cancelRequest']);
+Route::delete('/friend-requests/delete', [FriendRequestController::class, 'delete']);
